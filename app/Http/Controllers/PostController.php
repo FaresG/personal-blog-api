@@ -23,6 +23,11 @@ class PostController extends Controller
         return new PostCollection(Post::paginate(5));
     }
 
+    public function show(Request $request, Post $post): JsonResource
+    {
+        return new PostResource($post);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

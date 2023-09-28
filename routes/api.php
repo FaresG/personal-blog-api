@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public Routes
 Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
-Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
+Route::post('login', [\App\Http\Controllers\AuthController::class, 'login'])->middleware(['throttle:6,1']);
 
 
 // Protected Routes
