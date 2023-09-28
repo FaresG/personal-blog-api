@@ -26,7 +26,7 @@ class PostLoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'email'],
-            'password' => ['required']
+            'password' => ['required', Password::defaults()]
         ];
     }
     protected function failedValidation(Validator $validator)

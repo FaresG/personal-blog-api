@@ -27,7 +27,7 @@ class PostRegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:20', 'min:4'],
             'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required', Password::defaults()]
+            'password' => ['required', 'confirmed', Password::defaults()]
         ];
     }
 
