@@ -19,7 +19,7 @@ class UserResource extends JsonResource
                 'name' => $this->name,
                 'email' => $this->email,
             ],
-            'token' => $this->createToken('API Token of ' . $this->name)->plainTextToken
+            'token' => $request->user()?->currentAccessToken()->token ?? $this->createToken($this->email, ['server:update'])->plainTextToken
         ];
     }
 }

@@ -9,8 +9,12 @@ Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
 
 
 // Protected Routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'ability:server-update'])->group(function () {
     Route::apiResource('posts', \App\Http\Controllers\PostController::class);
-    Route::apiResource('users', \App\Http\Controllers\UserController::class);
     Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+});
+
+// Admin Routes
+Route::middleware(['auth:sanctum', 'ability:manage-users'])->group(function () {
+    Route::apiResource('users', \App\Http\Controllers\UserController::class);
 });
