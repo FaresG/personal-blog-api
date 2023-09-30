@@ -21,7 +21,10 @@ class AuthController extends Controller
         $user->remember_token = Str::random(10);
         $user->save();
 
-        return new UserResource($user);
+        return response()->json([
+            'user' => new UserResource($user),
+            'token' => $user->createToken(now())->plainTextToken
+        ]);
     }
 
     public function login(PostLoginRequest $request): JsonResource|JsonResponse
@@ -29,11 +32,14 @@ class AuthController extends Controller
         if (! Auth::attempt($request->validated())) {
             return response()->json([
                 'success' => false,
-                'message' => 'Could not login'
-            ], Response::HTTP_UNAUTHORIZED);
+                'message' => 'Wrong Credentials.'
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        return new UserResource(Auth::user());
+        return response()->json([
+            'user' => new UserResource(Auth::user()),
+            'token' => Auth::user()->createToken(now())->plainTextToken
+        ]);
     }
 
     public function logout(Request $request): JsonResponse {

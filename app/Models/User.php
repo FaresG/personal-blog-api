@@ -20,4 +20,10 @@ class User extends Authenticatable
             set: fn (string $value) => Hash::make($value)
         );
     }
+
+    public function isAdministrator(): bool
+    {
+        return $this->role === 'admin'
+            or $this->role === 'super_admin';
+    }
 }
