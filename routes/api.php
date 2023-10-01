@@ -7,14 +7,19 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
 Route::post('login', [\App\Http\Controllers\AuthController::class, 'login'])->middleware(['throttle:6,1']);
 
-
 // Protected Routes
-Route::middleware(['auth:sanctum', 'ability:server-update'])->group(function () {
-    Route::apiResource('posts', \App\Http\Controllers\PostController::class);
-    Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+Route::middleware('auth:sanctum')->group(function () {
+    // Routes require a valid API Token with correct ablility to access
+
+    // Users Routes (Admins can access that too)
+    Route::middleware('abilities:admin,default')->group(function () {
+        Route::apiResource('posts', \App\Http\Controllers\PostController::class);
+        Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+    });
+
+    // Admin Routes
+    Route::middleware('ability:admin')->group(function () {
+        Route::apiResource('users', \App\Http\Controllers\UserController::class);
+    });
 });
 
-// Admin Routes
-Route::middleware(['auth:sanctum', 'ability:manage-users'])->group(function () {
-    Route::apiResource('users', \App\Http\Controllers\UserController::class);
-});

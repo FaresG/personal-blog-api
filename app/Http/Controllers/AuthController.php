@@ -23,7 +23,7 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => new UserResource($user),
-            'token' => $user->createToken(now())->plainTextToken
+            'token' => $user->createToken(now(), ['default'])->plainTextToken
         ]);
     }
 
@@ -36,9 +36,12 @@ class AuthController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        // Check if it's an administrator and issue him a token with admin ability
+        $user = Auth::user();
+
         return response()->json([
-            'user' => new UserResource(Auth::user()),
-            'token' => Auth::user()->createToken(now())->plainTextToken
+            'user' => new UserResource($user),
+            'token' => $user->createToken(now(), [$user->isAdministrator() ? 'admin': 'default'])->plainTextToken
         ]);
     }
 

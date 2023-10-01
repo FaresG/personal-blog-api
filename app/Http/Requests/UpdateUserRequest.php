@@ -2,19 +2,18 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rules\Password;
 
-class PostLoginRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('update', User::class);
     }
 
     /**
@@ -25,8 +24,10 @@ class PostLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email'],
-            'password' => ['required', Password::defaults()]
+            'name' => ['string', 'max:255'],
+            'email' => ['email'],
+            'password' => [ 'confirmed', Password::defaults()],
+            'role' => ['string']
         ];
     }
 }

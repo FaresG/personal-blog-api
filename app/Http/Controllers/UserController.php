@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateUserRequest;
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,44 +18,38 @@ class UserController extends Controller
      */
     public function index(Request $request): JsonResponse|JsonResource
     {
-        if ($request->user()->cannot('viewAny', User::class)) {
-            return response()->json([
-                'message' => 'Only Admins can access!'
-            ], Response::HTTP_UNAUTHORIZED);
-        }
+//        if ($request->user()->cannot('viewAny', User::class)) {
+//            return response()->json([
+//                'message' => 'Only Admins can access!'
+//            ], Response::HTTP_UNAUTHORIZED);
+//        }
         return new UserCollection(User::all());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request): JsonResource
     {
-        //
+        $user = new User($request->validated());
+        $user->save();
+
+        return new UserResource($user);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(Request $request, User $user): JsonResource|JsonResponse
     {
-        //
-    }
+        if ($request->user()->cannot('view', $user)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized',
+            ], Response::HTTP_UNAUTHORIZED);
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
+        return new UserResource($user);
     }
 
     /**
@@ -61,7 +57,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        return new UserResource($user);
     }
 
     /**

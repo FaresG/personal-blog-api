@@ -37,47 +37,22 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $e)
     {
+        // Custom exceptions for API Token's abilities
         if ($e instanceof MissingAbilityException) {
             $abilities = collect($e->abilities());
-
-            if ($abilities->contains('manage-users')) {
-                return response()->json([
-                    'message' => 'Only Admins can manage users',
-                ], Response::HTTP_FORBIDDEN);
+            $message = $e->getMessage();
+            if ($abilities->contains('admin')) {
+                $message = 'Only Admins can manage users.';
             }
-            else if ($abilities->contains('server-update')) {
-                return response()->json([
-                    'message' => 'You cannot update the server.',
-                ], Response::HTTP_FORBIDDEN);
+            else if ($abilities->contains('default')) {
+                $message = 'You cannot access this service.';
             }
-        }
 
-        if ($e instanceof TooManyRequestsHttpException) {
             return response()->json([
-                'message' => 'Too many requests, retry later!',
-            ], Response::HTTP_TOO_MANY_REQUESTS);
+                'message' => $message,
+            ], Response::HTTP_FORBIDDEN);
         }
 
-        if ($e instanceof NotFoundHttpException) {
-            return response()->json([
-                'message' => 'Not Found!',
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        if ($e instanceof RouteNotFoundException) {
-            return response()->json([
-                'message' => 'Something wrong with the request headers. Check Accept header',
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        if ($e instanceof ModelNotFoundException) {
-            return response()->json([
-                'message' => 'Could not fetch result from the database.',
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json([
-            'message' => $e->getMessage()
-        ], 400);
+        return parent::render($request, $e);
     }
 }

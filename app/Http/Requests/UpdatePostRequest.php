@@ -29,12 +29,4 @@ class UpdatePostRequest extends FormRequest
             'content' => ['max:255']
         ];
     }
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(response()->json([
-            'success'   => false,
-            'message'   => 'Validation errors',
-            'data'      => $validator->errors()
-        ]));
-    }
 }
